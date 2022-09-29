@@ -10,8 +10,19 @@ class MainSong extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
       children: [
+        Container(
+          alignment: Alignment.topLeft,
+          margin: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+          child: const Text(
+            "Song of the day",
+            textAlign: TextAlign.start,
+            style: TextStyle(
+              fontSize: 30,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
         ClipRRect(
           borderRadius: BorderRadius.circular(10.0),
           child: Image.network(
@@ -30,23 +41,40 @@ class MainSong extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            Container(
-              margin: const EdgeInsets.only(top: 10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
-                  informationCard(
-                    CupertinoIcons.music_mic,
-                    "Artist",
-                    song.artist,
+            Row(
+              children: <Widget>[
+                Container(
+                  margin: const EdgeInsets.only(right: 10),
+                  padding: const EdgeInsets.all(3),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(100),
+                    border: Border.all(color: Colors.white70),
                   ),
-                  informationCard(
-                    CupertinoIcons.music_albums,
-                    "Album",
-                    song.album,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(100),
+                    child: Image.network(
+                      "https://api.napster.com/imageserver/v2/artists/${song.artistID}/images/300x300.jpg",
+                      width: 50,
+                      height: 50,
+                    ),
                   ),
-                ],
-              ),
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    informationCard(
+                      CupertinoIcons.music_mic,
+                      "Artist",
+                      song.artist,
+                    ),
+                    informationCard(
+                      CupertinoIcons.music_albums,
+                      "Album",
+                      song.album,
+                    ),
+                  ],
+                ),
+              ],
             )
           ]),
         )
@@ -55,33 +83,28 @@ class MainSong extends StatelessWidget {
   }
 
   Widget informationCard(IconData icon, String label, String text) {
-    return Column(children: <Widget>[
+    return Row(children: <Widget>[
+      Icon(
+        icon,
+        size: 12,
+        color: Colors.white,
+      ),
+      Container(
+        margin: const EdgeInsets.only(right: 5, left: 2),
+        child: Text(
+          label,
+          style: const TextStyle(
+            fontWeight: FontWeight.w300,
+            fontSize: 12,
+          ),
+        ),
+      ),
       Text(
         text,
-        textAlign: TextAlign.center,
         style: const TextStyle(
           fontSize: 15,
           fontStyle: FontStyle.italic,
         ),
-      ),
-      Row(
-        children: <Widget>[
-          Icon(
-            icon,
-            size: 12,
-            color: Colors.white,
-          ),
-          Container(
-            margin: const EdgeInsets.only(right: 5, left: 2),
-            child: Text(
-              label,
-              style: const TextStyle(
-                fontWeight: FontWeight.w300,
-                fontSize: 12,
-              ),
-            ),
-          ),
-        ],
       ),
     ]);
   }
