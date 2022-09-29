@@ -11,6 +11,7 @@ class Song {
   final String album;
   final String albumID;
   final String artistID;
+  final String previewURL;
 
   const Song({
     required this.name,
@@ -18,6 +19,7 @@ class Song {
     required this.album,
     required this.albumID,
     required this.artistID,
+    required this.previewURL,
   });
 }
 
@@ -34,6 +36,7 @@ Future<List<Song>> getTopSongsList() async {
         album: song["albumName"],
         albumID: song["albumId"],
         artistID: song["artistId"],
+        previewURL: song["previewURL"],
       );
       songsList.add(newSong);
     }
@@ -69,7 +72,7 @@ class _SongsState extends State<Songs> {
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 return Column(
-                  children: <Widget>[MainSong(song: snapshot.data![18])],
+                  children: <Widget>[MainSong(song: snapshot.data![1])],
                 );
               } else if (snapshot.hasError) {
                 return Text('${snapshot.error}');

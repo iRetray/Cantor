@@ -1,6 +1,9 @@
 import 'package:cantor/screens/songs.dart';
 import 'package:flutter/cupertino.dart';
 import "package:flutter/material.dart";
+import 'package:just_audio/just_audio.dart';
+
+final player = AudioPlayer();
 
 class MainSong extends StatelessWidget {
   final Song song;
@@ -77,7 +80,14 @@ class MainSong extends StatelessWidget {
               ],
             )
           ]),
-        )
+        ),
+        TextButton(
+          onPressed: playSong,
+          style: TextButton.styleFrom(
+            textStyle: const TextStyle(fontSize: 20),
+          ),
+          child: const Text('Enabled'),
+        ),
       ],
     );
   }
@@ -107,5 +117,10 @@ class MainSong extends StatelessWidget {
         ),
       ),
     ]);
+  }
+
+  Future<void> playSong() async {
+    await player.setUrl(song.previewURL);
+    player.play();
   }
 }
