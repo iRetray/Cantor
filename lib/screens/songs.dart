@@ -25,7 +25,7 @@ class Song {
 
 Future<List<Song>> getTopSongsList() async {
   final response = await http.get(Uri.parse(
-      'https://api.napster.com/v2.2/tracks/top?apikey=ZTk2YjY4MjMtMDAzYy00MTg4LWE2MjYtZDIzNjJmMmM0YTdm'));
+      'https://api.napster.com/v2.2/tracks/top?apikey=ZTk2YjY4MjMtMDAzYy00MTg4LWE2MjYtZDIzNjJmMmM0YTdm&range=life'));
   if (response.statusCode == 200) {
     var responseJSON = jsonDecode(response.body);
     List<Song> songsList = [];
@@ -72,7 +72,7 @@ class _SongsState extends State<Songs> {
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 return Column(
-                  children: <Widget>[MainSong(song: snapshot.data![18])],
+                  children: <Widget>[MainSong(song: snapshot.data![8])],
                 );
               } else if (snapshot.hasError) {
                 return Text('${snapshot.error}');

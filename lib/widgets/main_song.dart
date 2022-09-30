@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:cantor/screens/songs.dart';
 import 'package:flutter/cupertino.dart';
@@ -25,7 +26,7 @@ class _MainSongState extends State<MainSong> {
   bool isPlaying = false;
 
   double sliderValue = 0.0;
-  int secondsDuration = 0;
+  double secondsDuration = 1.0;
 
   @override
   void initState() {
@@ -38,7 +39,7 @@ class _MainSongState extends State<MainSong> {
     final duration = await player.setUrl(widget.song.previewURL);
     if (duration is Duration) {
       setState(() {
-        secondsDuration = duration.inSeconds;
+        secondsDuration = duration.inSeconds.toDouble();
       });
     }
   }
@@ -46,7 +47,14 @@ class _MainSongState extends State<MainSong> {
   void createPlayerListener() {
     playerPositionSubscription = player.positionStream.listen((newPosition) {
       setState(() {
-        currentPosition = newPosition;
+        if (newPosition.inSeconds >= secondsDuration) {
+          player.pause();
+          player.seek(const Duration(seconds: 0));
+          currentPosition = const Duration(seconds: 0);
+          isPlaying = false;
+        } else {
+          currentPosition = newPosition;
+        }
       });
     });
   }
@@ -145,16 +153,20 @@ class _MainSongState extends State<MainSong> {
                 getPlayerTime(currentPosition.inSeconds),
               ),
               Expanded(
-                child: CupertinoSlider(
-                  min: 0.0,
-                  /* max: secondsDuration!.toDouble(), */
-                  max: 29.0,
-                  value: currentPosition.inSeconds.toDouble(),
-                  onChanged: (newValue) => {},
+                child: Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 10),
+                  child: CupertinoSlider(
+                    min: 0.0,
+                    value: currentPosition.inSeconds.toDouble(),
+                    max: secondsDuration,
+                    onChanged: (newValue) => {
+                      updateSongPosition(newValue),
+                    },
+                  ),
                 ),
               ),
               Text(
-                getPlayerTime(secondsDuration!),
+                getPlayerTime(secondsDuration.toInt()),
               )
             ],
           ),
@@ -188,17 +200,17 @@ class _MainSongState extends State<MainSong> {
                       ),
                       textStyle: const TextStyle(fontSize: 20),
                       backgroundColor: Colors.white,
-                      fixedSize: const Size(60, 60)),
+                      fixedSize: const Size(70, 70)),
                   child: isPlaying
                       ? const Icon(
                           CupertinoIcons.pause,
-                          size: 40,
+                          size: 50,
                         )
                       : Container(
-                          alignment: Alignment.topRight,
+                          alignment: Alignment.centerRight,
                           child: const Icon(
                             CupertinoIcons.play,
-                            size: 40,
+                            size: 50,
                           ),
                         ),
                 ),
@@ -289,5 +301,9 @@ class _MainSongState extends State<MainSong> {
         ? (totalSeconds % 60).toString()
         : "0${(totalSeconds % 60).toString()}";
     return "$minutes:$seconds";
+  }
+
+  void updateSongPosition(double newPosition) {
+    player.seek(Duration(seconds: newPosition.toInt()));
   }
 }
