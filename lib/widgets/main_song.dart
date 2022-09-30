@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cantor/screens/songs.dart';
 import 'package:flutter/cupertino.dart';
 import "package:flutter/material.dart";
@@ -17,20 +19,35 @@ class MainSong extends StatefulWidget {
 }
 
 class _MainSongState extends State<MainSong> {
+  late StreamSubscription playerPositionSubscription;
+  late Duration currentPosition = const Duration(seconds: 0);
+
   bool isPlaying = false;
+
   double sliderValue = 0.0;
   int secondsDuration = 0;
 
   @override
   void initState() {
     setSongDuration();
+    createPlayerListener();
     super.initState();
   }
 
   void setSongDuration() async {
     final duration = await player.setUrl(widget.song.previewURL);
-    setState(() {
-      secondsDuration = duration!.inSeconds;
+    if (duration is Duration) {
+      setState(() {
+        secondsDuration = duration.inSeconds;
+      });
+    }
+  }
+
+  void createPlayerListener() {
+    playerPositionSubscription = player.positionStream.listen((newPosition) {
+      setState(() {
+        currentPosition = newPosition;
+      });
     });
   }
 
@@ -39,6 +56,7 @@ class _MainSongState extends State<MainSong> {
     return Column(
       children: [
         Container(
+          height: MediaQuery.of(context).size.height * 0.05,
           alignment: Alignment.topLeft,
           margin: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
           child: const Text(
@@ -50,14 +68,27 @@ class _MainSongState extends State<MainSong> {
             ),
           ),
         ),
-        ClipRRect(
-          borderRadius: BorderRadius.circular(10.0),
-          child: Image.network(
-            "https://api.napster.com/imageserver/v2/albums/${widget.song.albumID}/images/500x500.jpg",
-            width: 300,
+        Container(
+          height: MediaQuery.of(context).size.height * 0.45,
+          width: MediaQuery.of(context).size.width * 0.90,
+          margin: EdgeInsets.symmetric(
+            horizontal: MediaQuery.of(context).size.width * 0.10,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8.0),
+                child: Image.network(
+                  "https://api.napster.com/imageserver/v2/albums/${widget.song.albumID}/images/500x500.jpg",
+                  width: MediaQuery.of(context).size.width * 0.80,
+                ),
+              ),
+            ],
           ),
         ),
         Container(
+          height: MediaQuery.of(context).size.height * 0.12,
           margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
           child: Column(children: <Widget>[
             Text(
@@ -106,83 +137,88 @@ class _MainSongState extends State<MainSong> {
           ]),
         ),
         Container(
+          height: MediaQuery.of(context).size.height * 0.08,
           margin: const EdgeInsets.symmetric(horizontal: 20),
           child: Row(
-            /* TODO: Implement the slider reactivity */
             children: <Widget>[
               Text(
-                  "${(player.position.inSeconds / 60).floor().toString()}:${(player.position.inSeconds % 60).toString()}"),
+                getPlayerTime(currentPosition.inSeconds),
+              ),
               Expanded(
                 child: CupertinoSlider(
                   min: 0.0,
+                  /* max: secondsDuration!.toDouble(), */
                   max: 29.0,
-                  value: 15.0,
+                  value: currentPosition.inSeconds.toDouble(),
                   onChanged: (newValue) => {},
                 ),
               ),
               Text(
-                "${(secondsDuration / 60).floor().toString()}:${(secondsDuration % 60).toString()}",
+                getPlayerTime(secondsDuration!),
               )
             ],
           ),
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            TextButton(
-              onPressed: downVolume,
-              style: TextButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(100),
-                  ),
-                  textStyle: const TextStyle(fontSize: 20),
-                  backgroundColor: Colors.white10,
-                  fixedSize: const Size(30, 30)),
-              child: const Icon(
-                CupertinoIcons.volume_down,
-                size: 20,
-              ),
-            ),
-            Container(
-              margin: const EdgeInsets.symmetric(horizontal: 10),
-              child: TextButton(
-                onPressed: isPlaying ? pauseSong : playSong,
+        SizedBox(
+          height: MediaQuery.of(context).size.height * 0.10,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              TextButton(
+                onPressed: downVolume,
                 style: TextButton.styleFrom(
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(100),
                     ),
                     textStyle: const TextStyle(fontSize: 20),
-                    backgroundColor: Colors.white,
-                    fixedSize: const Size(60, 60)),
-                child: isPlaying
-                    ? const Icon(
-                        CupertinoIcons.pause,
-                        size: 40,
-                      )
-                    : Container(
-                        alignment: Alignment.topRight,
-                        child: const Icon(
-                          CupertinoIcons.play,
-                          size: 40,
-                        ),
+                    backgroundColor: Colors.white10,
+                    fixedSize: const Size(30, 30)),
+                child: const Icon(
+                  CupertinoIcons.volume_down,
+                  size: 20,
+                ),
+              ),
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 10),
+                child: TextButton(
+                  onPressed: isPlaying ? pauseSong : playSong,
+                  style: TextButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(100),
                       ),
+                      textStyle: const TextStyle(fontSize: 20),
+                      backgroundColor: Colors.white,
+                      fixedSize: const Size(60, 60)),
+                  child: isPlaying
+                      ? const Icon(
+                          CupertinoIcons.pause,
+                          size: 40,
+                        )
+                      : Container(
+                          alignment: Alignment.topRight,
+                          child: const Icon(
+                            CupertinoIcons.play,
+                            size: 40,
+                          ),
+                        ),
+                ),
               ),
-            ),
-            TextButton(
-              onPressed: upVolume,
-              style: TextButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(100),
-                  ),
-                  textStyle: const TextStyle(fontSize: 20),
-                  backgroundColor: Colors.white10,
-                  fixedSize: const Size(30, 30)),
-              child: const Icon(
-                CupertinoIcons.volume_up,
-                size: 20,
+              TextButton(
+                onPressed: upVolume,
+                style: TextButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(100),
+                    ),
+                    textStyle: const TextStyle(fontSize: 20),
+                    backgroundColor: Colors.white10,
+                    fixedSize: const Size(30, 30)),
+                child: const Icon(
+                  CupertinoIcons.volume_up,
+                  size: 20,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ],
     );
@@ -243,5 +279,15 @@ class _MainSongState extends State<MainSong> {
     }
   }
 
-  void updateRangeValue(double newRangeValue) {}
+  String getPlayerTime(int totalSeconds) {
+    String minutes = totalSeconds >= 60
+        ? (totalSeconds ~/ 60).toString().length == 2
+            ? (totalSeconds ~/ 60).toString()
+            : "0${(totalSeconds ~/ 60).toString()}"
+        : "00";
+    String seconds = (totalSeconds % 60).toString().length == 2
+        ? (totalSeconds % 60).toString()
+        : "0${(totalSeconds % 60).toString()}";
+    return "$minutes:$seconds";
+  }
 }
