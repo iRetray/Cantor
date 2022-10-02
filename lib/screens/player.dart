@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:cantor/widgets/main_song.dart';
+import 'package:cantor/widgets/music_player.dart';
 import 'package:flutter/material.dart';
 
 import 'package:http/http.dart' as http;
@@ -46,14 +46,14 @@ Future<List<Song>> getTopSongsList() async {
   }
 }
 
-class Songs extends StatefulWidget {
-  const Songs({super.key});
+class Player extends StatefulWidget {
+  const Player({super.key});
 
   @override
-  State<Songs> createState() => _SongsState();
+  State<Player> createState() => _PlayerState();
 }
 
-class _SongsState extends State<Songs> {
+class _PlayerState extends State<Player> {
   late Future<List<Song>> topSongsList;
 
   @override
@@ -72,7 +72,7 @@ class _SongsState extends State<Songs> {
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 return Column(
-                  children: <Widget>[MainSong(song: snapshot.data![8])],
+                  children: <Widget>[MusicPlayer(song: snapshot.data![8])],
                 );
               } else if (snapshot.hasError) {
                 return Text('${snapshot.error}');

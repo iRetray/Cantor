@@ -1,7 +1,6 @@
 import 'dart:async';
-import 'dart:developer';
 
-import 'package:cantor/screens/songs.dart';
+import 'package:cantor/screens/player.dart';
 import 'package:flutter/cupertino.dart';
 import "package:flutter/material.dart";
 import 'package:just_audio/just_audio.dart';
@@ -10,16 +9,16 @@ import 'package:volume_controller/volume_controller.dart';
 final player = AudioPlayer();
 final volume = VolumeController();
 
-class MainSong extends StatefulWidget {
+class MusicPlayer extends StatefulWidget {
   final Song song;
 
-  const MainSong({super.key, required this.song});
+  const MusicPlayer({super.key, required this.song});
 
   @override
-  State<MainSong> createState() => _MainSongState();
+  State<MusicPlayer> createState() => _MusicPlayerState();
 }
 
-class _MainSongState extends State<MainSong> {
+class _MusicPlayerState extends State<MusicPlayer> {
   late StreamSubscription playerPositionSubscription;
   late Duration currentPosition = const Duration(seconds: 0);
 
@@ -68,7 +67,7 @@ class _MainSongState extends State<MainSong> {
           alignment: Alignment.topLeft,
           margin: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
           child: const Text(
-            "Song of the day",
+            "Music Player",
             textAlign: TextAlign.start,
             style: TextStyle(
               fontSize: 30,

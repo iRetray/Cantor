@@ -1,6 +1,7 @@
+import 'package:cantor/screens/searcher.dart';
 import 'package:flutter/cupertino.dart';
 
-import 'package:cantor/screens/songs.dart';
+import 'package:cantor/screens/player.dart';
 
 void main() {
   runApp(const Cantor());
@@ -31,16 +32,16 @@ class NavigationRouter extends StatelessWidget {
         height: 60,
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(CupertinoIcons.music_albums),
-            label: 'Albums',
+            icon: Icon(CupertinoIcons.music_house),
+            label: 'Explore',
           ),
           BottomNavigationBarItem(
-            icon: Icon(CupertinoIcons.double_music_note),
-            label: 'Songs',
+            icon: Icon(CupertinoIcons.play_circle),
+            label: 'Player',
           ),
           BottomNavigationBarItem(
-            icon: Icon(CupertinoIcons.music_mic),
-            label: 'Artists',
+            icon: Icon(CupertinoIcons.search),
+            label: 'Search',
           ),
         ],
       ),
@@ -57,14 +58,14 @@ class NavigationRouter extends StatelessWidget {
           case 1:
             returnValue = CupertinoTabView(builder: (context) {
               return const CupertinoPageScaffold(
-                child: Songs(),
+                child: Player(),
               );
             });
             break;
           case 2:
             returnValue = CupertinoTabView(builder: (context) {
               return const CupertinoPageScaffold(
-                child: Text("Third child"),
+                child: Searcher(),
               );
             });
             break;
