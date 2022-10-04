@@ -1,27 +1,11 @@
 import 'dart:convert';
 
-import 'package:cantor/widgets/music_player.dart';
+import 'package:cantor/screens/music_player.dart';
 import 'package:flutter/material.dart';
 
 import 'package:http/http.dart' as http;
 
-class Song {
-  final String name;
-  final String artist;
-  final String album;
-  final String albumID;
-  final String artistID;
-  final String previewURL;
-
-  const Song({
-    required this.name,
-    required this.artist,
-    required this.album,
-    required this.albumID,
-    required this.artistID,
-    required this.previewURL,
-  });
-}
+import '../models/song.dart';
 
 Future<List<Song>> getTopSongsList() async {
   final response = await http.get(Uri.parse(

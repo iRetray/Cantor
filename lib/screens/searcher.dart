@@ -6,55 +6,10 @@ import 'package:flutter/material.dart';
 
 import 'package:http/http.dart' as http;
 
-class SearchResult {
-  final List<Album> albums;
-  final List<Artist> artists;
-  final List<Song> songs;
-
-  const SearchResult({
-    required this.albums,
-    required this.artists,
-    required this.songs,
-  });
-}
-
-class Song {
-  final String name;
-  final String artist;
-  final String album;
-  final String albumID;
-  final String artistID;
-  final String previewURL;
-
-  const Song({
-    required this.name,
-    required this.artist,
-    required this.album,
-    required this.albumID,
-    required this.artistID,
-    required this.previewURL,
-  });
-}
-
-class Artist {
-  final String name;
-  final String id;
-
-  const Artist({
-    required this.name,
-    required this.id,
-  });
-}
-
-class Album {
-  final String name;
-  final String copyright;
-
-  const Album({
-    required this.name,
-    required this.copyright,
-  });
-}
+import '../models/album.dart';
+import '../models/artist.dart';
+import '../models/search_result.dart';
+import '../models/song.dart';
 
 Future<SearchResult> getElementsByQuery(String query) async {
   if (query == "") {

@@ -6,6 +6,8 @@ import "package:flutter/material.dart";
 import 'package:just_audio/just_audio.dart';
 import 'package:volume_controller/volume_controller.dart';
 
+import '../models/song.dart';
+
 final player = AudioPlayer();
 final volume = VolumeController();
 
