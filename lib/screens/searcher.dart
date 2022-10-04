@@ -11,6 +11,10 @@ import '../models/artist.dart';
 import '../models/search_result.dart';
 import '../models/song.dart';
 
+import '../widgets/small_album.dart';
+import '../widgets/small_artist.dart';
+import '../widgets/small_song.dart';
+
 Future<SearchResult> getElementsByQuery(String query) async {
   if (query == "") {
     List<Song> songsList = [];
@@ -42,7 +46,6 @@ Future<SearchResult> getElementsByQuery(String query) async {
       songsList.add(newSong);
     }
     for (var artist in responseJSON["search"]["data"]["artists"]) {
-      log(artist["id"].toString());
       Artist newArtist = Artist(
         name: artist["name"],
         id: artist["id"],
@@ -51,6 +54,7 @@ Future<SearchResult> getElementsByQuery(String query) async {
     }
     for (var album in responseJSON["search"]["data"]["albums"]) {
       Album newAlbum = Album(
+        albumID: album["id"],
         name: album["name"],
         copyright: album["copyright"],
       );
@@ -125,155 +129,141 @@ class _SearcherState extends State<Searcher> {
           FutureBuilder<SearchResult>(
             future: resultsSearch,
             builder: (context, snapshot) {
-              if (snapshot.hasData) {
+              if (snapshot.hasData &&
+                  (snapshot.data!.songs.isNotEmpty ||
+                      snapshot.data!.artists.isNotEmpty ||
+                      snapshot.data!.albums.isNotEmpty)) {
                 return Container(
                   margin:
                       const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        "Songs",
-                        textAlign: TextAlign.start,
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
+                      if (snapshot.data!.songs.isNotEmpty)
+                        Container(
+                          margin: const EdgeInsets.only(bottom: 15),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                "Songs",
+                                textAlign: TextAlign.start,
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              SizedBox(
+                                height: 70,
+                                child: ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: snapshot.data!.songs.length,
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    return SmallSong(
+                                      song: snapshot.data!.songs[index],
+                                    );
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                      SizedBox(
-                        height: 70,
-                        child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: snapshot.data!.songs.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            return smallSong(snapshot.data!.songs[index]);
-                          },
+                      if (snapshot.data!.artists.isNotEmpty)
+                        Container(
+                          margin: const EdgeInsets.only(bottom: 15),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                "Artists",
+                                textAlign: TextAlign.start,
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              SizedBox(
+                                height: 170,
+                                child: ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: snapshot.data!.artists.length,
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    return SmallArtist(
+                                      artist: snapshot.data!.artists[index],
+                                    );
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                      const Text(
-                        "Artists",
-                        textAlign: TextAlign.start,
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
+                      if (snapshot.data!.albums.isNotEmpty)
+                        Container(
+                          margin: const EdgeInsets.only(bottom: 15),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                "Albums",
+                                textAlign: TextAlign.start,
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              SizedBox(
+                                height: 150,
+                                child: ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: snapshot.data!.artists.length,
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    return SmallAlbum(
+                                      album: snapshot.data!.albums[index],
+                                    );
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                      SizedBox(
-                        height: 180,
-                        child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: snapshot.data!.artists.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            return smallArtist(snapshot.data!.artists[index]);
-                          },
-                        ),
-                      ),
                     ],
                   ),
                 );
               } else if (snapshot.hasError) {
                 return Text('${snapshot.error}');
               }
-              return const CircularProgressIndicator();
+              return Container(
+                height: MediaQuery.of(context).size.height * 0.7,
+                alignment: Alignment.center,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      CupertinoIcons.music_albums,
+                      color: Colors.white24,
+                      size: 80,
+                    ),
+                    Container(
+                      margin: const EdgeInsets.only(top: 15),
+                      child: const Text(
+                        "Search something",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.white24,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
             },
           ),
         ],
       ),
     );
-  }
-
-  Widget smallSong(Song song) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.black87,
-        borderRadius: BorderRadius.circular(8.0),
-      ),
-      margin: const EdgeInsets.symmetric(
-        horizontal: 5,
-        vertical: 10,
-      ),
-      child: Row(
-        children: [
-          ClipRRect(
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(8.0),
-              bottomLeft: Radius.circular(8.0),
-            ),
-            child: Image.network(
-              "https://api.napster.com/imageserver/v2/albums/${song.albumID}/images/300x300.jpg",
-              height: 70,
-            ),
-          ),
-          Container(
-            width: MediaQuery.of(context).size.width * 0.25,
-            margin: const EdgeInsets.only(
-              left: 5,
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  song.name,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 12,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-                Text(
-                  song.artist,
-                  style: const TextStyle(
-                    fontStyle: FontStyle.italic,
-                    fontSize: 10,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget smallArtist(Artist artist) {
-    return artist.id.length <= 8
-        ? Container(
-            margin: const EdgeInsets.symmetric(
-              horizontal: 0,
-              vertical: 10,
-            ),
-            child: Column(
-              children: [
-                Container(
-                  width: 120,
-                  height: 120,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.white,
-                    image: DecorationImage(
-                      fit: BoxFit.cover,
-                      image: NetworkImage(
-                        "https://api.napster.com/imageserver/v2/artists/${artist.id}/images/356x237.jpg",
-                      ),
-                    ),
-                  ),
-                ),
-                Container(
-                  margin: const EdgeInsets.only(
-                    top: 5,
-                  ),
-                  child: Text(
-                    artist.name,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                )
-              ],
-            ),
-          )
-        : const SizedBox.shrink();
   }
 }

@@ -4,6 +4,7 @@ import 'package:cantor/screens/music_player.dart';
 import 'package:flutter/material.dart';
 
 import 'package:http/http.dart' as http;
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 import '../models/song.dart';
 
@@ -61,7 +62,27 @@ class _PlayerState extends State<Player> {
               } else if (snapshot.hasError) {
                 return Text('${snapshot.error}');
               }
-              return const CircularProgressIndicator();
+              return Container(
+                height: MediaQuery.of(context).size.height * 0.85,
+                alignment: Alignment.center,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    LoadingAnimationWidget.staggeredDotsWave(
+                      color: Colors.white,
+                      size: 60.0,
+                    ),
+                    const Text(
+                      "Loading music Player...",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              );
             },
           )
         ],

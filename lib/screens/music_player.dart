@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:cantor/screens/player.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import "package:flutter/material.dart";
 import 'package:just_audio/just_audio.dart';
@@ -88,8 +88,9 @@ class _MusicPlayerState extends State<MusicPlayer> {
             children: <Widget>[
               ClipRRect(
                 borderRadius: BorderRadius.circular(8.0),
-                child: Image.network(
-                  "https://api.napster.com/imageserver/v2/albums/${widget.song.albumID}/images/500x500.jpg",
+                child: CachedNetworkImage(
+                  imageUrl:
+                      "https://api.napster.com/imageserver/v2/albums/${widget.song.albumID}/images/500x500.jpg",
                   width: MediaQuery.of(context).size.width * 0.80,
                 ),
               ),
@@ -119,8 +120,9 @@ class _MusicPlayerState extends State<MusicPlayer> {
                   ),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(100),
-                    child: Image.network(
-                      "https://api.napster.com/imageserver/v2/artists/${widget.song.artistID}/images/300x300.jpg",
+                    child: CachedNetworkImage(
+                      imageUrl:
+                          "https://api.napster.com/imageserver/v2/artists/${widget.song.artistID}/images/300x300.jpg",
                       width: 50,
                       height: 50,
                     ),
